@@ -1,26 +1,25 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Ex1  where
+module Ex1 where
 
 import Data.List
 data ListBag a = LB [(a, Int)] deriving (Show, Eq)
 
 
 getListBagElements :: ListBag a -> [a]
---getListBagElements empty          = []
-getListBagElements (LB list) = fst $ unzip list
--- getListBagElements (LB((x,y):xs)) = x : getListBagElements (LB xs)
+getListBagElements (LB bag) = fst $ unzip bag
 
+
+-- A ListBag is well-formed if it does not contain two pairs 
+--(v, k) and  (v', k') with v = v'.
+wf :: (Eq a) => ListBag a -> Bool
+wf (LB bag) = (==) (length onlyElements) ( length $ nub onlyElements)
+           where onlyElements = getListBagElements $ LB bag
+
+-- getListBagElements (LB((x,y):xs)) = x : getListBagElements (LB xs)
 -- getListBagElements bag = case bag of LB bag -> fst(head bag) : getListBagElements (LB(tail(bag)))
                            
 -- mapListBagElements :: (a -> b) -> ListBag a -> [b]
 -- mapListBagMult :: ListBag a ->
-
-
--- A ListBag is well-formed if it does not contain two pairs 
--- (v, k) and  (v', k') with v = v'.
--- wf :: (Eq a) => ListBag a -> Bool
--- wf LB(xs) = (==) lenght (onlyElements) (nub onlyElements)
---          where onlyElements = getListBagElemets LB(xs)
 
 empty :: ListBag a
 empty = LB []
