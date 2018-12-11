@@ -25,6 +25,6 @@ instance Foldable ListBag where
 
 
 mapLB :: (Ord b) => (a -> b) -> ListBag a -> ListBag b
-mapLB f (LB [])      = LB []
-mapLB f (LB ((x,k):xs))  = (singoletto (f x) k) `sumBag` ( mapLB f (LB xs) )
-  where singoletto v k = LB [(v,k)]
+mapLB f (LB [])          = empty -- I cant put empty on both sides because the compiler cannot infers if it's an empty of ListBag a or of ListBag b
+mapLB f (LB ((x,k):xs))  = (singletonK (f x) k) `sumBag` ( mapLB f (LB xs) )
+

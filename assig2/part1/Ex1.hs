@@ -79,7 +79,3 @@ sumBag bag1 bag2 = fromList(list1 ++ list2)
 --            | (==) x v  = LB([(x, k+1)]) : LB(xs)
 --            | otherwise = insertBagList xs v
 
--- wf :: (Eq a) => ListBag a -> Bool
--- wf empty = True
--- wf ((x,k):xs) = (&&)  (wf xs)
-
