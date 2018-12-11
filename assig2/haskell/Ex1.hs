@@ -46,12 +46,12 @@ group' []     = []
 group' (x:xs) = (x : takeWhile (== x) xs) : group' (dropWhile (== x) xs)
 
 -- composing the group' function with a sort we get a list for each different element of the original list
-groupMerged :: (Eq a, Ord a) => [a] -> [[a]]
-groupMerged xs = group' $ sort xs
+groupMerge :: (Eq a, Ord a) => [a] -> [[a]]
+groupMerge xs = group' $ sort xs
 
 fromList :: (Eq a, Ord a) => [a] -> ListBag a
 fromList [] = empty
-fromList xs =  LB $ zip (nub $ sort xs) (map length (groupMerged xs))
+fromList xs =  LB $ zip (nub $ sort xs) (map length (groupMerge xs))
 
 count :: Eq a => a -> [a] -> Int
 count x = length . filter (x ==)
@@ -64,18 +64,20 @@ isEmpty bag
 mul :: (Eq a) => a -> ListBag a -> Int
 mul v bag = length $ filter (v ==) (toList bag)
 
--- not efficient at all!
+
+-- costs assuming: n1    = #elements in bag1
+--                 n2    = #elements in bag1
+--                 nMax  = max n1 n2
+--                 k1Max = max multiplicity in bag1
+--                 k2Max = max multiplicity in bag2
+--                 kMax  = max k1Max k2Max
+-- TIME: toList   costs O(n1 * k1Max) + O(n2 * k2Max) = O(nMax * kMax)
+--       fromList costs O(nMax * log Nmax)
+--       total time is  O(n*log n)
 sumBag :: (Eq a, Ord a) => ListBag a -> ListBag a -> ListBag a
 sumBag bag1 bag2 = fromList(list1 ++ list2)
           where list1 = toList bag1
                 list2 = toList bag2
 
--- unique :: [Int] -> [Int]
--- unique xs = [x | (x,y) <- zip xs [0..], x `notElem` (take y xs)]
-
--- insertBagList :: (Eq a) => ListBag a -> a -> ListBag a
--- insertBagList empty v         = (singleton v)
--- insertBagList ((x,k):xs) v
---            | (==) x v  = LB([(x, k+1)]) : LB(xs)
---            | otherwise = insertBagList xs v
-
+-- sumBag :: (Eq a, Ord a) => ListBag a -> ListBag a -> ListBag a
+-- sumBag' bag1@LB((x,kx):xs) bag2@LB((y,ky):ys) = takeWhile (/= y) bag1
