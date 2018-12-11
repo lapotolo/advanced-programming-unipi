@@ -2,12 +2,15 @@
 module Ex1 where
 
 import Data.List
+
 data ListBag a = LB [(a, Int)] deriving (Show, Eq)
 
 
 getListBagElements :: ListBag a -> [a]
 getListBagElements (LB bag) = fst $ unzip bag
 
+getListBagMultuplicities :: ListBag a -> [Int]
+getListBagMultuplicities (LB bag) = snd $ unzip bag
 
 -- A ListBag is well-formed if it does not contain two pairs
 --(v, k) and  (v', k') with v = v'.
@@ -42,13 +45,13 @@ group' :: (Eq a) => [a] -> [[a]]
 group' []     = []
 group' (x:xs) = (x : takeWhile (== x) xs) : group' (dropWhile (== x) xs)
 
+-- composing the group' function with a sort we get a list for each different element of the original list
 groupMerged :: (Eq a, Ord a) => [a] -> [[a]]
 groupMerged xs = group' $ sort xs
 
 fromList :: (Eq a, Ord a) => [a] -> ListBag a
 fromList [] = empty
 fromList xs =  LB $ zip (nub $ sort xs) (map length (groupMerged xs))
-
 
 count :: Eq a => a -> [a] -> Int
 count x = length . filter (x ==)
@@ -57,8 +60,6 @@ isEmpty :: (Eq a) => ListBag a -> Bool
 isEmpty bag
    | bag == empty = True
    | otherwise    = False
-
-
 
 mul :: (Eq a) => a -> ListBag a -> Int
 mul v bag = length $ filter (v ==) (toList bag)

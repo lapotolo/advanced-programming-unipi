@@ -10,7 +10,7 @@ test_expr1 = (Sum
                 (Mul (Const 2) (Const 3))
                 (Const 4)
              )
-             
+
 test_expr2 = (Sum -- safeEval = 13
                 (Mul
                     (Div  (Const 6) (Const 3) )

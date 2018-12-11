@@ -7,6 +7,9 @@ test_tree2 = Node
                  (Leaf 4)
 -- a suitable instance would be
 
+instance Functor Tree where
+  fmap
+
 instance Foldable Tree where
    foldMap f Empty = mempty
    foldMap f (Leaf x) = f x
