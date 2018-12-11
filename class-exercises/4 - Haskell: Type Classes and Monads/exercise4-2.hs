@@ -1,10 +1,12 @@
--- import Data.Monoid
-
 data Expr a = Const a
             | Sum (Expr a) (Expr a)
             | Mul (Expr a) (Expr a)
             | Div (Expr a) (Expr a)
+            | Id Var
             deriving (Show)
+
+data Var = X | Y | Z
+         deriving (Show)
 
 test_expr1 = (Sum
                 (Mul (Const 2) (Const 3))
@@ -21,6 +23,7 @@ test_expr2 = (Sum -- safeEval = 13
                     (Const 6)
                 )
              )
+
 
 
 -- EXERCISE 1
@@ -62,22 +65,8 @@ instance Functor Expr where
 
 -- EXERCISE 4
 
--- Cant be correct. Same set. too many operations => Expr instance of foldable
--- requires to implement foldMap not foldr
---
--- instance Monoid Expr where
---   mempty  (Const _) = id
---   mempty  (Sum _ _) = const 0
---   mempty  (Mul _ _) = const 1
---   mempty  (Div _ _) = const 1
---   mappend (Const _) = id -- wrong 
---   mappend (Sum _ _) = (+)
---   mappend (Mul _ _) = (*)
---   mappend (Div _ _) = (quot)
-
 instance Foldable Expr where
-  foldMap f (Const op)    = mempty
-  foldMap f (Sum op1 op2) = foldMap f op1 + foldMap f op2
-  foldMap f (Mul op1 op2) = foldMap f op1 * foldMap f op2
- --  foldMap f (Div op1 op2) = foldMap f op1 `quot` foldMap f op2
-  
+  foldMap f (Const op)    = op
+  foldMap f (Sum op1 op2) =
+  foldMap f (Mul op1 op2) =
+  foldMap f (Div op1 op2) =

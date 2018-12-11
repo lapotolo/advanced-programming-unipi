@@ -181,9 +181,9 @@ reverseTailRec xs = revAux (xs, [])
            revAux (y:ys, accum) = revAux (ys, y:accum)
 
 fibRec :: Int -> Int
-fibRec n =  if  n == 0 then  1
-                       else if n == 1 then 1
-                       else fibRec (n - 1) + fibRec (n - 2)
+fibRec n =  if      n == 0 then 1
+            else if n == 1 then 1
+            else fibRec (n - 1) + fibRec (n - 2)
 
 fibTailRec :: Int -> Int
 fibTailRec n = fibAux (0, 1, 0)
