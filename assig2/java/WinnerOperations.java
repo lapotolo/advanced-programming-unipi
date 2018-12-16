@@ -1,4 +1,3 @@
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -28,7 +27,7 @@ public class WinnerOperations {
 	static Stream<String> extremeWinners(Stream<Winner> inputStream){
 		return inputStream
 				.collect(Collectors.partitioningBy(w -> w.getWinnerAge() < 35)) // bipartition of the input stream by predicate isYoung()
-				.values() // we just need the values of the Map returned by the collect above
+				.values() // we just need the values ie List<Winners> of the Map<Bool, List<Winner>> returned by the collect above
 				.stream() // effectively get the a Stream<List<Winner>>
 				.map(winnerList -> winnerList.get(new Random().nextInt(winnerList.size()))) // get a random winner from each List
 				.map(Winner::getWinnerName);
@@ -47,18 +46,13 @@ public class WinnerOperations {
 				.sorted(Comparator.comparing(Winner::getYear)) // sorting by year *** This is a stateful intermediate operation.
 				.map(winner -> winner.getFilmTitle()) // Get a Stream<String> as requested
 				.distinct(); // remove duplicates *** This is a stateful intermediate operation.			
-			}
-
-//	static <T, U> Stream doStuff(Function< Stream<T>, Stream<U> > f, Stream<T> collectionAsStream) {
-//		return f.apply(collectionAsStream);
-//	}
+	}
 
 	// 4
 	// T = winner , U = String
 	static <T, U> Stream runJobs(Stream< Function< Stream<T>, Stream<U> >> jobs, Collection<T> coll) {
 		return jobs
-				.map(job -> job.apply(coll.stream()))
-				.to;
+				.map(job -> job.apply(coll.stream()));
 	}
 	
 	// 5
@@ -76,12 +70,9 @@ public class WinnerOperations {
 		Function<Stream<Winner>, Stream<String>> fun2 = WinnerOperations::extremeWinners;
 		Function<Stream<Winner>, Stream<String>> fun3 = WinnerOperations::multiAwardedFilm;
 		// these return Stream<String>
-		Stream<String> results = (Stream<String>) runJobs(Stream.of(fun1, fun2, fun3), winners);
+		// Stream<String> results = (Stream<String>) runJobs(Stream.of(fun1, fun2, fun3), winners);
 								
-    	// runJobs(Stream.of(fun1, fun2, fun3), winners).map(stringa ->System.out.println(stringa));
-
+    	List<String> results = runJobs(Stream.of(fun1, fun2, fun3), winners).collect(Collectors::toList);
+		results.forEach(System.out::println);
 	}
-	InputStream inputFS = new FileInputStream(new File(inputFilePath));
-	BufferedReader br = new BufferedReader(new InputStreamReader(inputFS));
-	inputAsList = br.lines()
 }
