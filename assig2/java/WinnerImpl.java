@@ -57,7 +57,6 @@ public class WinnerImpl implements Winner {
 						.map(word -> word.split(",")) // split every line at ","
 						.map(win -> (Winner) new WinnerImpl(Integer.parseInt(win[1]), Integer.parseInt(win[2]), win[3].replace("\"", ""), win[4].replace("\"", ""))); // cast needed to match signature
 				} catch(IOException e) {
-					System.out.println("ciao merda!");
 					throw new RuntimeException();
 				}
 			})
