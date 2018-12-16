@@ -1,4 +1,6 @@
-reverse xs = -- linear, tail recursive
-        let rev ( [], accum ) = accum
-            rev ( y:ys, accum ) = rev ( ys, y:accum )
-        in rev ( xs, [] )
+import Ex1
+
+instance Monad ListBag where
+  return m lb = lb
+  (f lb) (>>=) (g lb)
+main = do
