@@ -1,0 +1,3 @@
+javac ./Winner.java ./WinnerImpl.java ./prove.java 
+java prove
+rm ./*.class

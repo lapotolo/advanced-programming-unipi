@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class WinnerImpl implements Winner {
 	private int year;
 	private int age;
@@ -54,9 +57,34 @@ public class WinnerImpl implements Winner {
 						.map(word -> word.split(",")) // split every line at ","
 						.map(win -> (Winner) new WinnerImpl(Integer.parseInt(win[1]), Integer.parseInt(win[2]), win[3].replace("\"", ""), win[4].replace("\"", ""))); // cast needed to match signature
 				} catch(IOException e) {
+					System.out.println("ciao merda!");
 					throw new RuntimeException();
-					}
+				}
 			})
 			.collect(Collectors.toList());
 	}
+
+
+	// LOADING FILES FUNCTIONALLY
+	// alternative way to open a single file
+/*
+	static Collection<Winner> processInputFile(String inputFilePath) {
+		List<Winner> inputAsList = new ArrayList<Winner>();
+		try {
+		  	InputStream inputFS = new FileInputStream(new File(inputFilePath));
+		  	BufferedReader br = new BufferedReader(new InputStreamReader(inputFS));
+		  	// skip the header of the csv
+		  	inputAsList = br.lines()
+					.skip(1)
+					.map(word -> word.split(","))
+					.map(win -> (Winner) new WinnerImpl(Integer.parseInt(win[1]), Integer.parseInt(win[2]), win[3].replace("\"", ""), win[4].replace("\"", ""))) // cast needed to match signature					
+				  	.collect(Collectors.toList());
+		  	br.close();
+		} catch (Exception e) {	  
+			System.out.println("eccezione lanciata!");
+		}
+		return inputAsList ;
+	}
+*/
+
 }

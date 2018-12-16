@@ -1,4 +1,5 @@
 import winnerpackage.*;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -27,7 +28,7 @@ public class WinnerOperations {
 				.values() // we just need the values of the Map returned by the collect above
 				.stream() // effectively get the a Stream<List<Winner>>
 				.map(winnerList -> winnerList.get(new Random().nextInt(winnerList.size()))) // get a random winner from each List
-				//.map(winnerList -> winnerList.get( (int)(Math.random()*100) % winnerList .size())) // alternative way to get a random element
+				//	.map(winnerList -> winnerList.get( (int)(Math.random()*100) % winnerList .size())) // alternative way to get a random element
 				.sorted(Comparator.comparing(Winner::getWinnerName)); // sorting alphabetically by name
 	}
 
