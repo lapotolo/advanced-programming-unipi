@@ -50,35 +50,43 @@ public class WinnerOperations {
 
 	// 4
 	// T = winner , U = String
-	static <T, U> Stream runJobs(Stream< Function< Stream<T>, Stream<U> >> jobs, Collection<T> coll) {
+	static <T, U> Stream<U> runJobs(Stream< Function< Stream<T>, Stream<U> >> jobs, Collection<T> coll) {
 		return jobs
-				.map(job -> job.apply(coll.stream()));
-				//coll.stream().map(element -> jobs);
-	
+				.map(job -> job.apply(coll.stream()))
+				.flatMap(Function.identity());
 			}
-	
 	// 5
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
 		String[] paths = {MALE_PATH, FEMALE_PATH};
 		Collection<Winner> winners = WinnerImpl.loadData(paths);
-		// oldWinners(winners.stream()).forEach(System.out::println);
-		// System.out.println("\n\n\n");
-		// extremeWinners(winners.stream()).forEach(System.out::println);
-		// System.out.println("\n\n\n");		
-		// multiAwardedFilm(winners.stream()).forEach(System.out::println);
+
 		Function<Stream<Winner>, Stream<String>> fun1 = WinnerOperations::oldWinners;	
 		Function<Stream<Winner>, Stream<String>> fun2 = WinnerOperations::extremeWinners;
 		Function<Stream<Winner>, Stream<String>> fun3 = WinnerOperations::multiAwardedFilm;
 								
-		// I want to achieve this
-    	// List<String> results = runJobs(Stream.of(fun1, fun2, fun3), winners).collect(Collectors::toList);
-		List<String> result1 = fun1.apply(winners.stream()).collect(Collectors.toList());
-		result1.forEach(System.out::println);
-		System.out.println("*************************************************************************************");
-		List<String> result2 = fun2.apply(winners.stream()).collect(Collectors.toList());
-		result2.forEach(System.out::println);
-		System.out.println("*************************************************************************************");
-		List<String> result3 = fun3.apply(winners.stream()).collect(Collectors.toList());
-		result3.forEach(System.out::println);
+		runJobs(Stream.of(fun1, fun2, fun3), winners)
+			.collect(Collectors.toList())
+			.forEach(System.out::println);
 	}
 }
+
+
+
+
+
+
+
+
+
+		// I want to achieve this
+    	// List<String> results = runJobs(Stream.of(fun1, fun2, fun3), winners).collect(Collectors::toList);
+		// List<String> result1 = fun1.apply(winners.stream()).collect(Collectors.toList());
+		// result1.forEach(System.out::println);
+		// System.out.println("*************************************************************************************");
+		// List<String> result2 = fun2.apply(winners.stream()).collect(Collectors.toList());
+		// result2.forEach(System.out::println);
+		// System.out.println("*************************************************************************************");
+		// List<String> result3 = fun3.apply(winners.stream()).collect(Collectors.toList());
+		// result3.forEach(System.out::println);
+		// System.out.println("*************************************************************************************");
+		// System.out.println("*************************************************************************************");
