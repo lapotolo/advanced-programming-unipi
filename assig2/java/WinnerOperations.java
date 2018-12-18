@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.ArrayList;
+import java.util.*;
 
 public class WinnerOperations {
 
@@ -18,21 +19,21 @@ public class WinnerOperations {
 	// 1
 	static Stream<String> oldWinners(Stream<Winner> inputStream){
 		return inputStream
-				.filter(w -> w.getWinnerAge() > 35) // filtering out every winner strictly older than 35
-				.sorted(Comparator.comparing(Winner::getWinnerName)) // sorting alphabetically by name
-				.map(Winner::getWinnerName);
+				.filter(w -> w.getWinnerAge() > 35) // filtering out every winner strictly younger than 35
+				.sorted(Comparator.comparing(Winner::getWinnerName)) // sorting alphabetically by winner name
+				.map(Winner::getWinnerName); // transforming into a Stream<String> where each String is the name of a winner as requested by the implemented method
 	}
 
-	// 2
+	// 2 
 	static Stream<String> extremeWinners(Stream<Winner> inputStream){
-		return inputStream
-				.collect(Collectors.partitioningBy(w -> w.getWinnerAge() < 35)) // bipartition of the input stream by predicate isYoung()
-				.values() // we just need the values ie List<Winners> of the Map<Bool, List<Winner>> returned by the collect above
-				.stream() // effectively get the a Stream<List<Winner>>
-				.map(winnerList -> winnerList.get(new Random().nextInt(winnerList.size()))) // get a random winner from each List
-				.map(Winner::getWinnerName);
-				// .map(winnerList -> winnerList.get( (int)(Math.random()*100) % winnerList .size())) // alternative way to get a random element
-				//.sorted(Comparator.comparing(Winner::getWinnerName)); // sorting alphabetically by name
+		// I need to collect the input stream to reuse it multiple times. 
+		Collection<Winner> winners = inputStream.collect(Collectors.toList());
+		int minAge = winners.stream().mapToInt(Winner::getWinnerAge).min().orElse(Integer.MIN_VALUE); // getting the min age in the db
+		int maxAge = winners.stream().mapToInt(Winner::getWinnerAge).max().orElse(Integer.MAX_VALUE); // getting the max age in the db
+		return winners.stream()
+				.filter(w -> (w.getWinnerAge() == minAge) || (w.getWinnerAge() == maxAge)) // filtering out every winner with age != minAge or maxAge
+				.map(Winner::getWinnerName) // going from Stream<Winner> to a Stream<String>
+				.sorted(Comparator.reverseOrder()); // sorting in reversed lexicographical order
 	}
 
 	// 3
@@ -49,44 +50,25 @@ public class WinnerOperations {
 	}
 
 	// 4
-	// T = winner , U = String
 	static <T, U> Stream<U> runJobs(Stream< Function< Stream<T>, Stream<U> >> jobs, Collection<T> coll) {
 		return jobs
 				.map(job -> job.apply(coll.stream()))
-				.flatMap(Function.identity());
-			}
+				.flatMap(Function.identity()); // needed to pass from a Stream<Stream<String>> to a Stream<String>
+	}	
+	// both flatMap(Function.identity()) and flatMap(resultStream -> resultStream )
+	// give the same result. The first one gives reduced space cost.
+	// source: https://stackoverflow.com/questions/28032827/java-8-lambdas-function-identity-or-t-t 
+	
 	// 5
 	public static void main(String[] args) {		
 		String[] paths = {MALE_PATH, FEMALE_PATH};
 		Collection<Winner> winners = WinnerImpl.loadData(paths);
-
+		
 		Function<Stream<Winner>, Stream<String>> fun1 = WinnerOperations::oldWinners;	
 		Function<Stream<Winner>, Stream<String>> fun2 = WinnerOperations::extremeWinners;
 		Function<Stream<Winner>, Stream<String>> fun3 = WinnerOperations::multiAwardedFilm;
-								
 		runJobs(Stream.of(fun1, fun2, fun3), winners)
-			.collect(Collectors.toList())
+			.collect(Collectors.toList()) // returns a List<String> but this is not needed to just print the results as requested
 			.forEach(System.out::println);
 	}
 }
-
-
-
-
-
-
-
-
-
-		// I want to achieve this
-    	// List<String> results = runJobs(Stream.of(fun1, fun2, fun3), winners).collect(Collectors::toList);
-		// List<String> result1 = fun1.apply(winners.stream()).collect(Collectors.toList());
-		// result1.forEach(System.out::println);
-		// System.out.println("*************************************************************************************");
-		// List<String> result2 = fun2.apply(winners.stream()).collect(Collectors.toList());
-		// result2.forEach(System.out::println);
-		// System.out.println("*************************************************************************************");
-		// List<String> result3 = fun3.apply(winners.stream()).collect(Collectors.toList());
-		// result3.forEach(System.out::println);
-		// System.out.println("*************************************************************************************");
-		// System.out.println("*************************************************************************************");
