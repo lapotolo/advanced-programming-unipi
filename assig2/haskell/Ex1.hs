@@ -3,7 +3,6 @@ module Ex1 where
 
 import Data.List
 
--- Note the constraint Eq.
 data ListBag a = LB [(a, Int)] deriving (Show, Eq)
 
 
@@ -12,6 +11,10 @@ getListBagElements (LB bag) = fmap fst bag
 
 getListBagMultuplicities :: ListBag a -> [Int]
 getListBagMultuplicities (LB bag) = fmap snd bag
+
+-- IMPLEMENTATION CHOICE
+-- I preferred to put in almost every function the constraint (Eq a)
+-- since to test for equality is needed to test for well formedness
 
 -- A ListBag is well-formed if it does not contain two pairs
 --(v, k) and  (v', k') with v = v'.
@@ -62,33 +65,12 @@ mul v bag = length $ filter (v ==) (toList bag)
 
 {-  =============================================================================
 
-In the following lines of code I gave two different implementation of sumBag
+In the following lines of code I gave two different implementations of sumBag
 both for efficiency reason since sumBag' always produces sorted by elements
 ListBag and for experimenting with typeclasses.
-I was not sure
- . sumBag' introduces
+ . sumBag  need only the type constraint Eq a
+ . sumBag' need 
  ============================================================================= -}
-
--- Note that I introduced the constraint Ord a to get some performance improvements
--- costs assuming: n1    = #elements in bag1
---                 n2    = #elements in bag1
---                 nMax  = max n1 n2
---                 k1Max = max multiplicity in bag1
---                 k2Max = max multiplicity in bag2
---                 kMax  = max k1Max k2Max
--- TIME: toList   costs O(n1 * k1Max) + O(n2 * k2Max) = O(nMax * kMax)
---       fromList costs O(nMax * log Nmax)
---       total time is  O(n*log n)
-sumBag' :: (Eq a, Ord a) => ListBag a -> ListBag a -> ListBag a
-sumBag' bag1 bag2 = fromList(list1 ++ list2)
-          where list1 = toList bag1
-                list2 = toList bag2
-
-{-  =============================================================================
-This is another implementation of ListBag that does not introduces the constraint
-Ord a
- ============================================================================= -}
-
 
 
 -- get the elements of two ListBag no duplicates
@@ -114,11 +96,26 @@ equalListBags bag1 bag2  = all test (getElements bag1 bag2)
     -- Check that a key maps to the same value in both ListBag
     test element =  (==) (getMult element bag1) (getMult element bag2)
 
-
 -- finish here please!
 sumBag :: (Eq a) => ListBag a -> ListBag a -> ListBag a
-sumBag bag1 bag2 = LB $ map sumMultsSameElement (getElements bag1 bag2)
+sumBag bag1 bag2 = LB $ map sumMultSameElement (getElements bag1 bag2)
    where
      -- Build a new list element from a key
-     sumMultsSameElement = (\ele -> (ele, ( (+) (getMult ele bag1) (getMult ele bag2) )))
+     sumMultSameElement ele = (ele, ( (+) (getMult ele bag1) (getMult ele bag2) ))
 
+
+
+-- Note that I introduced the constraint Ord a to get some performance improvements
+-- costs assuming: n1    = #elements in bag1
+--                 n2    = #elements in bag1
+--                 nMax  = max n1 n2
+--                 k1Max = max multiplicity in bag1
+--                 k2Max = max multiplicity in bag2
+--                 kMax  = max k1Max k2Max
+-- TIME: toList   costs O(n1 * k1Max) + O(n2 * k2Max) = O(nMax * kMax)
+--       fromList costs O(nMax * log Nmax)
+--       total time is  O(n*log n)
+sumBag' :: (Eq a, Ord a) => ListBag a -> ListBag a -> ListBag a
+sumBag' bag1 bag2 = fromList(list1 ++ list2)
+          where list1 = toList bag1
+                list2 = toList bag2
