@@ -4,15 +4,7 @@
 module Ex5 where
 import Ex1
 import Ex2
-import qualified Data.Map (unionWith)
 import qualified Data.Char (chr)
-
--- The resulting monad represents conceptully both a container
--- (a bag of distinct elements, each one with its multiplicity),
--- or
--- a computational effect
--- (a function :: a -> ListBag b
--- is a non-deterministic function returning the multiset of possible results).
 
 -- 1
 -- Prelude Monad typeclass definition
@@ -59,21 +51,9 @@ I took inspiration from the Monad [] implementation:
    since fL :: (a -> ListBag b)
    map fL listified :: [ListBag b]
 The next step is to "concatenate" all the ListBags in the above mentioned
-ListBag b by using the method unions, more precisely to take the union
+ListBag b by using the method unions, more precisely we take the union
 since we are working with set-like data structures
-
 -}
-
-testLB1 = fromList [49, 50, 51, 49] :: ListBag Int
--- LB [(49,2),(50,1),(51,1)]
--- listifiedTest = toList testLB1 :: [Int]
-encodeInt :: Maybe Int -> Maybe Char
-encodeInt (Just x) = Just (Data.Char.chr x)
-encodeInt Nothing  = Nothing
-
-fLTest = (\ x -> returnLB $ Data.Char.chr x) :: Int -> ListBag Char
--- fLTest 49 = LB [('1',1)]
-fLTest2 = (\ x -> returnLB $ encodeInt x)
 
 --2
 {-
@@ -96,3 +76,25 @@ source : https://wiki.haskell.org/Functor-Applicative-Monad_Proposal#Using_Funct
 
 
 -- 3) Write some tests for the functions just implemented
+
+
+--testLB1 = fromList [49, 50, 51, 49] :: ListBag Int
+-- LB [(49,2),(50,1),(51,1)]
+-- listifiedTest = toList testLB1 :: [Int]
+-- encodeInt :: Int -> Maybe Char
+-- encodeInt x
+--   | x > maxBound    = Nothing
+--   |otherwise        = Just (Data.Char.chr x)
+        
+-- fLTest = (\ x -> returnLB $ Data.Char.chr x) :: Int -> ListBag Char
+-- fLTest 49 = LB [('1',1)]
+-- fLTest2 = (\ x -> returnLB $ encodeInt x)
+
+
+
+test1 = (returnLB $ (Just 1)) `bindLB` (\x -> returnLB ([x]) `bindLB` (\y -> returnLB $ replicate 5 y) )
+-- LB [([[Just 1],[Just 1],[Just 1],[Just 1],[Just 1]],1)]
+test2 = (returnLB $ (Just 1)) `bindLB` (\x -> returnLB ([x]) `bindLB` (\y -> returnLB $ y++y) )
+-- LB [([Just 1,Just 1],1)]
+test3 = (returnLB $ ([1,2,3])) `bindLB` (\x -> returnLB ([x]) `bindLB` (\y -> returnLB $ replicate 5 y) )
+test4 = fromList [1,1,1,2,2,3,3,3,3,3] `bindLB` (\x -> returnLB [Just x,Just (-x)])
