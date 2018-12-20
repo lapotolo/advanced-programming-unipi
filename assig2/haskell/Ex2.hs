@@ -1,3 +1,5 @@
+-- author: Lapo Toloni, ID: 568235
+
 {-# LANGUAGE TemplateHaskell #-}
 module Ex2 where
 
@@ -24,12 +26,12 @@ instance Foldable ListBag where
 -- to concatenate singleton by singleton what we obtained after having applied the f function passed to the map
 mapLB :: (Eq b) => (a -> b) -> ListBag a -> ListBag b
 mapLB _ (LB [])          = empty -- I cannot put empty on both sides because the compiler cannot infers if it's an empty of ListBag a or of ListBag b
-mapLB f (LB ((x,k):xs))  = (singletonK (f x) k) ` sumBag `   ( mapLB f (LB xs) )
+mapLB f (LB ((x,k):xs))  = (singletonK (f x) k) `sumBag` ( mapLB f (LB xs) )
 
 
-mapLB' :: (Ord b) => (a -> b) -> ListBag a -> ListBag b
-mapLB' _ (LB [])          = empty
-mapLB' f (LB ((x,k):xs))  = (singletonK (f x) k) ` sumBag' ` ( mapLB' f (LB xs) )
+mapLBOrd :: (Ord b) => (a -> b) -> ListBag a -> ListBag b
+mapLBOrd _ (LB [])          = empty
+mapLBOrd f (LB ((x,k):xs))  = (singletonK (f x) k) `sumBagOrd` ( mapLBOrd f (LB xs) )
 
 -- mapLB satisfies both the functor laws ie
 --     mapLB id = id

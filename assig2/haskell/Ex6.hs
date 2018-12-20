@@ -1,3 +1,5 @@
+-- author: Lapo Toloni, ID: 568235
+
 {-# LANGUAGE TemplateHaskell #-}
 module Ex6 where
 
